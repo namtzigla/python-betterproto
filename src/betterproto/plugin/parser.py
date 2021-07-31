@@ -75,7 +75,8 @@ def generate_code(
             # If not INCLUDE_GOOGLE,
             # skip re-compiling Google's well-known types
             continue
-
+        if ("SINGLE_PACKAGE" in plugin_options) and (proto_file.name not in request.file_to_generate):
+            continue
         output_package_name = proto_file.package
         if output_package_name not in request_data.output_packages:
             # Create a new output if there is no output for this package
@@ -110,8 +111,7 @@ def generate_code(
 
         # Add files to the response object
         output_path = pathlib.Path(*output_package_name.split("."), "__init__.py")
-        if "NO_PACKAGE" in plugin_options:
-            print(f"override {output_path} to __init__.py", file=sys.stderr)
+        if "SINGLE_PACKAGE" in plugin_options:
             output_path = pathlib.Path("__init__.py")
 
         output_paths.add(output_path)
