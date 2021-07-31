@@ -111,6 +111,7 @@ def generate_code(
         # Add files to the response object
         output_path = pathlib.Path(*output_package_name.split("."), "__init__.py")
         if "NO_PACKAGE" in plugin_options:
+            print(f"override {output_path} to __init__.py", file=sys.stderr)
             output_path = pathlib.Path("__init__.py")
 
         output_paths.add(output_path)
