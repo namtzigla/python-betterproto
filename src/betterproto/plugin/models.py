@@ -69,6 +69,7 @@ from ..compile.naming import (
     pythonize_method_name,
 )
 
+import sys
 
 # Create a unique placeholder to deal with
 # https://stackoverflow.com/questions/51575931/class-inheritance-in-python-3-7-dataclasses
@@ -650,11 +651,13 @@ class ServiceMethodCompiler(ProtoContentBase):
             self.output_file.typing_imports.add("Optional")
         self.mutable_default_args  # ensure this is called before rendering
 
+        print(f"method: {self.proto_obj.name} streaming {self.client_streaming}/{self.server_streaming}", file=sys.stderr)
         # Check for Async imports
         if self.client_streaming:
             self.output_file.typing_imports.add("AsyncIterable")
             self.output_file.typing_imports.add("Iterable")
             self.output_file.typing_imports.add("Union")
+            self.output_file.typing_imports.add("AsyncIterator")
         if self.server_streaming:
             self.output_file.typing_imports.add("AsyncIterator")
 

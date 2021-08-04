@@ -29,6 +29,8 @@ from .models import (
     is_oneof,
 )
 
+import sys
+
 if TYPE_CHECKING:
     from google.protobuf.descriptor import Descriptor
 
@@ -64,6 +66,7 @@ def generate_code(
     request: CodeGeneratorRequest, response: CodeGeneratorResponse
 ) -> None:
     plugin_options = request.parameter.split(",") if request.parameter else []
+    print(f"plugin options:{plugin_options}", file=sys.stderr)
 
     request_data = PluginRequestCompiler(plugin_request_obj=request)
     # Gather output packages
@@ -76,6 +79,8 @@ def generate_code(
             # skip re-compiling Google's well-known types
             continue
         if ("SINGLE_PACKAGE" in plugin_options) and (proto_file.name not in request.file_to_generate):
+            # if we are generating a single package and the file it is not in the requested file as input 
+            # we skip processing it
             continue
         output_package_name = proto_file.package
         if output_package_name not in request_data.output_packages:
@@ -112,6 +117,7 @@ def generate_code(
         # Add files to the response object
         output_path = pathlib.Path(*output_package_name.split("."), "__init__.py")
         if "SINGLE_PACKAGE" in plugin_options:
+            print(f"single file {output_path}", file=sys.stderr)
             output_path = pathlib.Path("__init__.py")
 
         output_paths.add(output_path)
